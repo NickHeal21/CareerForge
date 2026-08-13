@@ -1,0 +1,83 @@
+# Knowledge Base Configuration
+# This file defines how the RAG system organizes and indexes the knowledge base.
+# Each category maps to a ChromaDB collection for modular retrieval.
+
+categories:
+  interview_questions:
+    description: "Technical and behavioral interview questions organized by domain"
+    collections:
+      - name: "interview_se_dsa"
+        path: "interview_questions/software_engineering/dsa.md"
+        tags: ["interview", "dsa", "software_engineering"]
+      - name: "interview_se_system_design"
+        path: "interview_questions/software_engineering/system_design.md"
+        tags: ["interview", "system_design", "software_engineering"]
+      - name: "interview_hr"
+        path: "interview_questions/hr/behavioral.md"
+        tags: ["interview", "hr", "behavioral"]
+
+  cs_fundamentals:
+    description: "Core CS concepts for technical preparation"
+    collections:
+      - name: "cs_oop"
+        path: "cs_fundamentals/oop.md"
+        tags: ["cs", "oop", "fundamentals"]
+      - name: "cs_dbms"
+        path: "cs_fundamentals/dbms.md"
+        tags: ["cs", "dbms", "fundamentals"]
+      - name: "cs_os"
+        path: "cs_fundamentals/os.md"
+        tags: ["cs", "os", "fundamentals"]
+      - name: "cs_networks"
+        path: "cs_fundamentals/computer_networks.md"
+        tags: ["cs", "networks", "fundamentals"]
+
+  learning_roadmaps:
+    description: "Structured learning paths for different career domains"
+    collections:
+      - name: "roadmap_se"
+        path: "learning_roadmaps/software_engineering.md"
+        tags: ["roadmap", "software_engineering"]
+      - name: "roadmap_aiml"
+        path: "learning_roadmaps/ai_ml.md"
+        tags: ["roadmap", "ai_ml"]
+
+  resume_guides:
+    description: "Resume writing and ATS optimization guides"
+    collections:
+      - name: "resume_best_practices"
+        path: "resume_guides/best_practices.md"
+        tags: ["resume", "ats", "career"]
+
+  project_recommendations:
+    description: "Project ideas organized by domain and difficulty"
+    collections:
+      - name: "projects_se"
+        path: "project_recommendations/software_engineering.md"
+        tags: ["projects", "software_engineering"]
+      - name: "projects_aiml"
+        path: "project_recommendations/ai_ml.md"
+        tags: ["projects", "ai_ml"]
+
+  learning_resources:
+    description: "Curated courses, tutorials, and learning materials"
+    collections:
+      - name: "resources_se"
+        path: "learning_resources/software_engineering.md"
+        tags: ["resources", "software_engineering"]
+      - name: "resources_aiml"
+        path: "learning_resources/ai_ml.md"
+        tags: ["resources", "ai_ml"]
+
+  career_guidance:
+    description: "Career advice, job search strategy, and industry insights"
+    collections:
+      - name: "career_se"
+        path: "career_guidance/software_engineering.md"
+        tags: ["career", "software_engineering"]
+
+# Adding new domains:
+# 1. Create markdown files in the appropriate category folder
+# 2. Add collection entries here with domain-specific tags
+# 3. Run: python -m app.ai.rag.ingestion
+# No code changes required — the ingestion pipeline reads this config.

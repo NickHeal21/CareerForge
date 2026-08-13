@@ -1,0 +1,97 @@
+version: "3.9"
+
+services:
+  # --- PostgreSQL ---
+  postgres:
+    image: postgres:16-alpine
+    container_name: careerforge-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-careerforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-careerforge_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-careerforge}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-careerforge}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # --- Redis ---
+  redis:
+    image: redis:7-alpine
+    container_name: careerforge-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # --- ChromaDB ---
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: careerforge-chroma
+    ports:
+      - "${CHROMA_PORT:-8100}:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+    restart: unless-stopped
+
+  # --- FastAPI Backend ---
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: careerforge-api
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: postgres
+      REDIS_HOST: redis
+      CHROMA_HOST: chroma
+      CHROMA_PORT: 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - upload_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      chroma:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- React Frontend ---
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: careerforge-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  chroma_data:
+  upload_data:
