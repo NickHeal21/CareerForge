@@ -63,3 +63,6 @@ htmlcov/
 
 # Alembic
 alembic/versions/__pycache__/
+
+#others
+docs
