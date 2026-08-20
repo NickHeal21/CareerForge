@@ -1,59 +1,109 @@
 import { NavLink } from 'react-router-dom';
-import {
-  HiOutlineViewGrid,
-  HiOutlineDocumentText,
-  HiOutlineLightningBolt,
-  HiOutlineMap,
-  HiOutlineChatAlt2,
-  HiOutlineAcademicCap,
-  HiOutlineChartBar,
-} from 'react-icons/hi';
 
-const navItems = [
-  { to: '/dashboard', icon: HiOutlineViewGrid, label: 'Dashboard' },
-  { to: '/resume', icon: HiOutlineDocumentText, label: 'Resume' },
-  { to: '/skills', icon: HiOutlineLightningBolt, label: 'Skill Gap' },
-  { to: '/roadmap', icon: HiOutlineMap, label: 'Roadmap' },
-  { to: '/interview', icon: HiOutlineAcademicCap, label: 'Interview' },
-  { to: '/mentor', icon: HiOutlineChatAlt2, label: 'AI Mentor' },
-  { to: '/progress', icon: HiOutlineChartBar, label: 'Progress' },
+const primaryNavItems = [
+  { to: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
+  { to: '/resume', icon: 'description', label: 'Resume' },
+  { to: '/skills', icon: 'psychology', label: 'Skills' },
+  { to: '/progress', icon: 'trending_up', label: 'Progress' },
 ];
 
-export default function Sidebar() {
+const secondaryNavItems = [
+  { to: '/roadmap', icon: 'map', label: 'Roadmap' },
+  { to: '/interview', icon: 'forum', label: 'Interview' },
+  { to: '/mentor', icon: 'school', label: 'Mentor' },
+];
+
+export default function Sidebar({ mobileOpen, onClose }) {
   return (
-    <aside className="glass flex w-64 flex-col border-r border-brand-500/10">
-      {/* Logo */}
-      <div className="flex h-16 items-center gap-3 px-6">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-accent-500">
-          <span className="text-lg font-bold text-white">C</span>
+    <>
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed left-0 top-0 h-full w-64 z-50
+          bg-surface border-r border-outline-variant
+          flex flex-col p-4 space-y-2
+          transition-transform duration-200 ease-in-out
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0
+        `}
+      >
+        {/* Logo */}
+        <div className="px-4 py-6">
+          <span className="text-xl font-bold text-primary tracking-tight">
+            CareerForge
+          </span>
         </div>
-        <span className="text-xl font-bold gradient-text">CareerForge</span>
-      </div>
 
-      {/* Navigation */}
-      <nav className="mt-4 flex-1 space-y-1 px-3">
-        {navItems.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-brand-500/15 text-brand-400 shadow-lg shadow-brand-500/5'
-                  : 'text-surface-200/70 hover:bg-surface-700/50 hover:text-surface-100'
-              }`
-            }
-          >
-            <Icon className="h-5 w-5 flex-shrink-0" />
-            <span>{label}</span>
-          </NavLink>
-        ))}
-      </nav>
+        {/* Primary Navigation */}
+        <nav className="flex-1 space-y-2">
+          {primaryNavItems.map(({ to, icon, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              onClick={onClose}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-lg text-base transition-colors duration-200 ${
+                  isActive
+                    ? 'bg-primary-container text-on-primary-container font-bold'
+                    : 'text-on-surface-variant hover:bg-surface-container-low'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <span
+                    className="material-symbols-outlined"
+                    style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}
+                  >
+                    {icon}
+                  </span>
+                  <span>{label}</span>
+                </>
+              )}
+            </NavLink>
+          ))}
+        </nav>
 
-      {/* Footer */}
-      <div className="border-t border-surface-700/50 px-4 py-4">
-        <p className="text-xs text-surface-200/40 text-center">CareerForge v1.0</p>
-      </div>
-    </aside>
+        {/* Secondary Navigation (below divider) */}
+        <div className="border-t border-outline-variant pt-4">
+          <div className="space-y-2">
+            {secondaryNavItems.map(({ to, icon, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-lg text-base transition-colors duration-200 ${
+                    isActive
+                      ? 'bg-primary-container text-on-primary-container font-bold'
+                      : 'text-on-surface-variant hover:bg-surface-container-low'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <span
+                      className="material-symbols-outlined"
+                      style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}
+                    >
+                      {icon}
+                    </span>
+                    <span>{label}</span>
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }

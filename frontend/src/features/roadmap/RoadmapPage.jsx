@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { HiOutlineMap, HiOutlineCheck } from 'react-icons/hi';
 import { roadmapApi } from '../../api/index';
 import toast from 'react-hot-toast';
 
@@ -52,114 +51,141 @@ export default function RoadmapPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-surface-100">Learning Roadmap</h1>
-          <p className="mt-1 text-sm text-surface-200/60">AI-generated personalized learning path</p>
-        </div>
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight mb-2">
+          Learning Roadmap
+        </h1>
+        <p className="text-sm text-on-surface-variant">
+          Define your target role and track your upskilling progress.
+        </p>
       </div>
 
-      {/* Generate Form */}
-      <div className="glass-light rounded-2xl p-6">
-        <h2 className="text-lg font-semibold text-surface-100 mb-4">Generate New Roadmap</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-surface-200/80">Target Role *</label>
+      {/* Configuration Section */}
+      <section className="bg-surface rounded-lg border border-outline-variant p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold text-on-surface uppercase tracking-wider" htmlFor="target-role">
+              Target Role
+            </label>
             <input
+              id="target-role"
+              type="text"
               value={form.target_role}
-              onChange={(e) => setForm(f => ({...f, target_role: e.target.value}))}
-              placeholder="e.g., Full Stack Developer"
-              className="w-full rounded-xl border border-surface-700/50 bg-surface-800/50 py-3 px-4 text-sm text-surface-100 placeholder-surface-200/30 outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20"
+              onChange={(e) => setForm(f => ({ ...f, target_role: e.target.value }))}
+              placeholder="e.g. Senior Frontend Engineer"
+              className="w-full bg-surface-container-low border border-outline-variant rounded-md px-4 py-3 text-sm text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-surface-200/80">Weeks</label>
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold text-on-surface uppercase tracking-wider" htmlFor="current-skills">
+              Current Skills
+            </label>
             <input
-              type="number"
-              value={form.weeks}
-              onChange={(e) => setForm(f => ({...f, weeks: parseInt(e.target.value) || 8}))}
-              min={2} max={24}
-              className="w-full rounded-xl border border-surface-700/50 bg-surface-800/50 py-3 px-4 text-sm text-surface-100 outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20"
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <label className="mb-1.5 block text-sm font-medium text-surface-200/80">Current Skills</label>
-            <input
+              id="current-skills"
+              type="text"
               value={form.current_skills}
-              onChange={(e) => setForm(f => ({...f, current_skills: e.target.value}))}
-              placeholder="e.g., Python, HTML, CSS, basic JavaScript"
-              className="w-full rounded-xl border border-surface-700/50 bg-surface-800/50 py-3 px-4 text-sm text-surface-100 placeholder-surface-200/30 outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20"
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <label className="mb-1.5 block text-sm font-medium text-surface-200/80">Skill Gaps</label>
-            <input
-              value={form.skill_gaps}
-              onChange={(e) => setForm(f => ({...f, skill_gaps: e.target.value}))}
-              placeholder="e.g., React, Node.js, System Design"
-              className="w-full rounded-xl border border-surface-700/50 bg-surface-800/50 py-3 px-4 text-sm text-surface-100 placeholder-surface-200/30 outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20"
+              onChange={(e) => setForm(f => ({ ...f, current_skills: e.target.value }))}
+              placeholder="e.g. HTML, CSS, basic JS"
+              className="w-full bg-surface-container-low border border-outline-variant rounded-md px-4 py-3 text-sm text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </div>
         </div>
-        <button
-          onClick={handleGenerate}
-          disabled={loading}
-          className="mt-4 w-full rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          <HiOutlineMap className="h-4 w-4" />
-          {loading ? 'Generating with AI...' : 'Generate Roadmap'}
-        </button>
-      </div>
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleGenerate}
+            disabled={loading}
+            className="bg-primary text-on-primary font-semibold text-sm py-2.5 px-6 rounded-md hover:bg-surface-tint transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Generating with AI...' : 'Generate Roadmap'}
+          </button>
+        </div>
+      </section>
 
-      {/* Roadmap Display */}
+      {/* Timeline Section */}
       {displayRoadmap && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-surface-100">{displayRoadmap.title}</h2>
+        <section>
+          <h3 className="text-xl font-semibold text-on-surface mb-6">
+            {displayRoadmap.title || 'Your Path'}
+          </h3>
           {displayRoadmap.description && (
-            <p className="text-sm text-surface-200/60">{displayRoadmap.description}</p>
+            <p className="text-sm text-on-surface-variant mb-6">{displayRoadmap.description}</p>
           )}
 
-          {/* Milestones */}
-          {(displayRoadmap.milestones || []).map((m, i) => (
-            <div key={m.id || i} className="glass-light rounded-2xl p-5">
-              <div className="flex items-start gap-3">
-                {m.id ? (
-                  <button
-                    onClick={() => toggleMilestone(displayRoadmap.id, m.id, m.is_completed)}
-                    className={`mt-0.5 flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-all flex-shrink-0 ${m.is_completed ? 'border-emerald-500 bg-emerald-500' : 'border-surface-600 hover:border-brand-500'}`}
-                  >
-                    {m.is_completed && <HiOutlineCheck className="h-4 w-4 text-white" />}
-                  </button>
-                ) : (
-                  <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-lg bg-brand-500/20 text-brand-400 text-xs font-bold flex-shrink-0">
-                    {m.week || i + 1}
-                  </div>
-                )}
-                <div className="flex-1">
-                  <p className={`text-sm font-semibold ${m.is_completed ? 'text-surface-200/40 line-through' : 'text-surface-100'}`}>
-                    {m.title}
-                  </p>
-                  <p className="mt-1 text-xs text-surface-200/50">{m.description}</p>
-                  {m.tasks && (
-                    <ul className="mt-2 space-y-1">
-                      {m.tasks.map((t, ti) => (
-                        <li key={ti} className="flex items-center gap-2 text-xs text-surface-200/60">
-                          <span className="h-1 w-1 rounded-full bg-brand-400" />{t}
-                        </li>
-                      ))}
-                    </ul>
+          <div className="relative pl-6 md:pl-8 border-l border-outline-variant space-y-8 ml-4">
+            {(displayRoadmap.milestones || []).map((m, i) => (
+              <div key={m.id || i} className="relative group">
+                {/* Timeline Marker */}
+                <div className={`absolute -left-[35px] md:-left-[41px] top-1 w-6 h-6 rounded-full border-2 border-surface flex items-center justify-center ${
+                  m.is_completed
+                    ? 'bg-primary'
+                    : i === 0 ? 'bg-primary-container' : 'bg-surface-container-high'
+                }`}>
+                  {m.is_completed ? (
+                    <span className="material-symbols-outlined text-on-primary text-sm">check</span>
+                  ) : (
+                    <div className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-primary' : 'bg-outline-variant'}`} />
                   )}
                 </div>
+
+                {/* Card */}
+                <div className={`bg-surface rounded-lg border border-outline-variant p-4 hover:bg-surface-container-low transition-colors duration-200 ${m.is_completed ? 'opacity-60' : ''}`}>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 pr-4">
+                      <span className={`inline-block px-2 py-1 rounded text-xs font-medium mb-2 ${
+                        i === 0 && !m.is_completed
+                          ? 'bg-surface-container-high text-primary'
+                          : 'bg-surface-container-high text-on-surface-variant'
+                      }`}>
+                        Week {m.week || i + 1}
+                      </span>
+                      <h4 className={`text-xl font-semibold mb-1 ${m.is_completed ? 'text-on-surface-variant line-through' : 'text-on-surface'}`}>
+                        {m.title}
+                      </h4>
+                      <p className="text-sm text-on-surface-variant">{m.description}</p>
+                      {m.tasks && (
+                        <ul className="mt-3 space-y-1">
+                          {m.tasks.map((t, ti) => (
+                            <li key={ti} className="flex items-center gap-2 text-xs text-on-surface-variant">
+                              <span className="h-1 w-1 rounded-full bg-primary" />{t}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                    {m.id && (
+                      <div className="pt-2">
+                        <input
+                          type="checkbox"
+                          checked={m.is_completed || false}
+                          onChange={() => toggleMilestone(displayRoadmap.id, m.id, m.is_completed)}
+                          className="w-5 h-5 border-outline-variant rounded text-primary focus:ring-primary bg-surface-container-lowest cursor-pointer"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Future placeholder */}
+            <div className="relative">
+              <div className="absolute -left-[35px] md:-left-[41px] top-1 w-6 h-6 rounded-full bg-surface-container-high border-2 border-surface flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-outline-variant" />
+              </div>
+              <div className="bg-transparent p-4 border border-dashed border-outline-variant rounded-lg flex items-center justify-center h-20">
+                <span className="text-sm text-outline">More milestones will appear here...</span>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        </section>
       )}
 
+      {/* Empty state */}
       {!displayRoadmap && !loading && (
-        <div className="glass-light rounded-2xl p-10 text-center">
-          <HiOutlineMap className="mx-auto h-12 w-12 text-surface-200/30" />
-          <p className="mt-4 text-sm text-surface-200/40">No roadmaps yet. Generate your first learning roadmap above!</p>
+        <div className="border border-outline-variant rounded-lg p-10 text-center bg-surface">
+          <span className="material-symbols-outlined text-5xl text-outline-variant mb-4">map</span>
+          <p className="text-sm text-on-surface-variant">No roadmaps yet. Generate your first learning roadmap above!</p>
         </div>
       )}
     </div>

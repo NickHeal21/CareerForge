@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CareerForge - Mock Interview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#d0e1fb",
+                        "on-background": "#141b2b",
+                        "on-secondary-container": "#54647a",
+                        "tertiary-fixed": "#ffdcc6",
+                        "outline": "#727785",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#dce2f7",
+                        "surface-tint": "#005ac2",
+                        "on-surface-variant": "#424754",
+                        "primary-container": "#2170e4",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container": "#e9edff",
+                        "surface-container-low": "#f1f3ff",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#b75b00",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline-variant": "#c2c6d6",
+                        "on-tertiary-container": "#fffbff",
+                        "secondary": "#505f76",
+                        "surface-container-highest": "#dce2f7",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-tertiary-fixed": "#311400",
+                        "on-primary-container": "#fefcff",
+                        "surface": "#f9f9ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#924700",
+                        "on-primary": "#ffffff",
+                        "background": "#f9f9ff",
+                        "inverse-primary": "#adc6ff",
+                        "inverse-on-surface": "#edf0ff",
+                        "on-primary-fixed": "#001a42",
+                        "on-error": "#ffffff",
+                        "primary": "#0058be",
+                        "surface-container-high": "#e1e8fd",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f9f9ff",
+                        "surface-dim": "#d3daef",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#141b2b",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-surface": "#293040"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "base": "4px",
+                        "lg": "24px",
+                        "container-margin": "20px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "code": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "code": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row">
+<!-- NavigationDrawer (Desktop) -->
+<aside class="hidden md:flex flex-col p-md space-y-sm bg-surface dark:bg-surface border-r border-outline-variant dark:border-outline fixed left-0 top-0 h-full w-64 z-40">
+<div class="px-container-margin py-lg mb-8">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">CareerForge</h1>
+</div>
+<nav class="flex-1 flex flex-col space-y-2 px-sm">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-body-lg text-body-lg">Roadmap</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-body-lg text-body-lg">Interview</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-body-lg text-body-lg">Mentor</span>
+</a>
+</nav>
+</aside>
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden flex justify-between items-center px-container-margin py-sm w-full top-0 sticky bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline z-40">
+<button class="p-2 text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-primary dark:text-primary-fixed-dim">CareerForge</h1>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col md:ml-64 pb-20 md:pb-0 w-full max-w-[1200px] mx-auto">
+<div class="px-container-margin py-xl w-full">
+<header class="mb-xl">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-2">Mock Interview Session</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Configure your session and practice with our AI interviewer.</p>
+</header>
+<!-- Configuration Section -->
+<section class="mb-xl p-lg rounded-xl border border-outline-variant bg-surface-container-lowest">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="flex flex-col space-y-sm">
+<label class="font-label-md text-label-md text-on-surface" for="topic-select">Interview Topic</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" id="topic-select">
+<option value="behavioral">Behavioral</option>
+<option value="dsa">Data Structures &amp; Algorithms</option>
+<option value="system-design">System Design</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col space-y-sm">
+<label class="font-label-md text-label-md text-on-surface" for="difficulty-select">Difficulty Level</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" id="difficulty-select">
+<option value="medium">Medium</option>
+<option value="easy">Easy</option>
+<option value="hard">Hard</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Chat Interface -->
+<section class="flex flex-col space-y-lg mb-xl">
+<!-- AI Message -->
+<div class="flex items-start max-w-[85%]">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center flex-shrink-0 mr-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="bg-surface-container border border-outline-variant rounded-xl rounded-tl-sm p-4 text-on-surface font-body-md text-body-md">
+<p class="mb-2 font-medium">Behavioral Question 1/5</p>
+<p>Tell me about a time you had to handle a significant conflict within your engineering team. How did you approach the situation, and what was the outcome?</p>
+</div>
+</div>
+<!-- User Answer Input Area -->
+<div class="flex flex-col max-w-[85%] self-end w-full">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl rounded-tr-sm p-4 w-full">
+<textarea class="w-full bg-transparent border-none focus:ring-0 p-0 font-body-md text-body-md text-on-surface resize-none placeholder-on-surface-variant/50" placeholder="Type your answer here... Consider using the STAR method (Situation, Task, Action, Result)." rows="5"></textarea>
+<div class="flex justify-between items-center mt-4 pt-4 border-t border-outline-variant">
+<div class="flex space-x-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container-low" title="Record Audio">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container-low" title="Attach file">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-label-md text-label-md uppercase hover:bg-primary/90 transition-colors flex items-center space-x-2">
+<span>Submit Answer</span>
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Feedback Card (Mocking state after submit) -->
+<section class="border border-outline-variant rounded-xl bg-surface-container-lowest p-lg relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center">
+<span class="material-symbols-outlined text-primary mr-2" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                        AI Feedback
+                    </h3>
+<div class="flex items-center bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-md text-label-md">
+<span class="mr-1 font-bold">Score:</span> 4 / 5
+                    </div>
+</div>
+<div class="space-y-md">
+<div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface mb-2 flex items-center">
+<span class="material-symbols-outlined text-[18px] text-green-600 mr-2">check_circle</span>
+                            Strengths
+                        </h4>
+<ul class="list-disc pl-8 font-body-md text-body-md text-on-surface-variant space-y-1">
+<li>Good use of the STAR method to structure your response.</li>
+<li>Clearly defined the technical constraints that led to the conflict.</li>
+</ul>
+</div>
+<div class="pt-4 border-t border-outline-variant">
+<h4 class="font-body-md text-body-md font-semibold text-on-surface mb-2 flex items-center">
+<span class="material-symbols-outlined text-[18px] text-tertiary-container mr-2">trending_up</span>
+                            Areas for Improvement
+                        </h4>
+<ul class="list-disc pl-8 font-body-md text-body-md text-on-surface-variant space-y-1">
+<li>Elaborate more on the <em>interpersonal</em> dynamics. How did the other engineer feel?</li>
+<li>The result focused heavily on the project delivery; mention the long-term impact on team morale or working relationships.</li>
+</ul>
+</div>
+</div>
+<div class="mt-lg flex justify-end">
+<button class="border border-outline text-on-surface hover:bg-surface-container-low px-6 py-2 rounded-lg font-label-md text-label-md uppercase transition-colors">
+                        Next Question
+                    </button>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden flex justify-around items-center h-16 w-full fixed bottom-0 z-50 bg-surface dark:bg-surface border-t border-outline-variant dark:border-outline">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[24px]">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-xl px-4 py-1 hover:bg-surface-container-low transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">forum</span>
+<span class="font-label-md text-label-md mt-1 font-bold">Interview</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[24px]">psychology</span>
+<span class="font-label-md text-label-md mt-1">Skills</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-low transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[24px]">trending_up</span>
+<span class="font-label-md text-label-md mt-1">Progress</span>
+</a>
+</nav>
+</body></html>
