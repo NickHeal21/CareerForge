@@ -1,0 +1,28 @@
+/* Import Google Font — must be first per PostCSS spec */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-brand:     #6366f1; /* indigo-500  */
+  --color-brand-dark:#4f46e5; /* indigo-600  */
+  --color-surface:   #0f172a; /* slate-900   */
+  --color-card:      #1e293b; /* slate-800   */
+  --color-border:    #334155; /* slate-700   */
+  --color-text:      #f1f5f9; /* slate-100   */
+  --color-muted:     #94a3b8; /* slate-400   */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
