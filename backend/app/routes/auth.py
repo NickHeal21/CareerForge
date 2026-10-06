@@ -44,7 +44,7 @@ def register(body: UserRegister, db: Session = Depends(get_db)):
         name=body.name.strip(),
         email=body.email,
         password_hash=hashed,
-        role="APPLICANT",
+        role=body.role,
     )
     db.add(new_user)
     db.commit()

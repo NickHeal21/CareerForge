@@ -121,7 +121,7 @@ export default function JobsPage() {
                 {skillsFor(job).length > 4 && <span className="px-1 py-1 text-[11px] text-slate-500">+{skillsFor(job).length - 4}</span>}
               </div>
               <div className="mt-auto flex items-center justify-between gap-3 border-t border-slate-700/80 pt-4 mt-5">
-                <span className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Sample listing</span>
+                <span className="text-[11px] font-medium uppercase tracking-wide text-slate-500">{job.recruiter_id ? 'Company listing' : 'Sample listing'}</span>
                 <button onClick={() => { setSelectedJob(job); setError('') }} className="rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-indigo-500">View details</button>
               </div>
             </article>)}

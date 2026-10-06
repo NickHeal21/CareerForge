@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from pydantic import BaseModel, EmailStr, field_validator
 
 
@@ -11,6 +12,7 @@ class UserRegister(BaseModel):
     name: str
     email: EmailStr
     password: str
+    role: Literal["APPLICANT", "RECRUITER"] = "APPLICANT"
 
     @field_validator("name")
     @classmethod

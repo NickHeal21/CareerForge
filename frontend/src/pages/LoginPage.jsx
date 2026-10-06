@@ -3,6 +3,10 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { loginUser } from '../api/auth'
 import { useAuth } from '../store/useAuthStore'
 
+function dashboardPath(account) {
+  return account?.role === 'RECRUITER' ? '/recruiter' : account?.role === 'APPLICANT' ? '/dashboard' : '/'
+}
+
 /**
  * LoginPage — /login
  *
@@ -19,10 +23,9 @@ export default function LoginPage() {
   const [errors, setErrors]       = useState({})
   const [serverError, setServerError] = useState('')
   const [loading, setLoading]     = useState(false)
-
   // If the user is already logged in, skip straight to dashboard
   useEffect(() => {
-    if (user) navigate('/dashboard', { replace: true })
+    if (user) navigate(dashboardPath(user), { replace: true })
   }, [user, navigate])
 
   const justRegistered = location.state?.registered
@@ -50,7 +53,7 @@ export default function LoginPage() {
     try {
       const res = await loginUser(form.email.trim(), form.password)
       login(res.data)                         // store token + user in context + localStorage
-      navigate('/dashboard', { replace: true })
+      navigate(dashboardPath(res.data.user), { replace: true })
     } catch (err) {
       const msg = err.response?.data?.detail || 'Login failed. Please try again.'
       setServerError(msg)

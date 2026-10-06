@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.database import create_tables
 import app.models  # noqa: F401 — registers all models with SQLAlchemy before create_tables()
-from app.routes import health, auth, profile, resumes, jobs, applications
+from app.routes import health, auth, profile, resumes, jobs, applications, readiness, roadmaps, recruiter, mentor
 from app.seed import seed_jobs
 
 settings = get_settings()
@@ -41,6 +41,10 @@ app.include_router(profile.router, prefix="/api/profile")
 app.include_router(resumes.router, prefix="/api/resumes")
 app.include_router(jobs.router, prefix="/api/jobs")
 app.include_router(applications.router, prefix="/api/applications")
+app.include_router(readiness.router, prefix="/api/readiness")
+app.include_router(roadmaps.router, prefix="/api/roadmaps")
+app.include_router(recruiter.router, prefix="/api/recruiter")
+app.include_router(mentor.router, prefix="/api/mentor")
 
 # Future routers (uncomment as phases progress):
 # app.include_router(resumes.router, prefix="/api/resumes", tags=["resumes"])

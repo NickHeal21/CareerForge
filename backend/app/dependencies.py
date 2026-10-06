@@ -76,3 +76,13 @@ def get_current_user(
 
     return user
 
+
+def get_current_recruiter(current_user=Depends(get_current_user)):
+    """Require the existing authenticated account to have the recruiter role."""
+    if current_user.role != "RECRUITER":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Recruiter access is required.",
+        )
+    return current_user
+

@@ -8,8 +8,8 @@ import api from './client'
  */
 
 /** POST /api/auth/register */
-export function registerUser(name, email, password) {
-  return api.post('/api/auth/register', { name, email, password })
+export function registerUser(name, email, password, role = 'APPLICANT') {
+  return api.post('/api/auth/register', { name, email, password, role })
 }
 
 /** POST /api/auth/login */

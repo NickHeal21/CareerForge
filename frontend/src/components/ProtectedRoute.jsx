@@ -12,7 +12,7 @@ import { useAuth } from '../store/useAuthStore'
  * Usage in App.jsx:
  *   <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
  */
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, allowedRole }) {
   const { user, loading } = useAuth()
 
   // Still checking localStorage token against the backend — avoid flash redirect
@@ -26,6 +26,11 @@ export default function ProtectedRoute({ children }) {
 
   if (!user) {
     return <Navigate to="/login" replace />
+  }
+
+  if (allowedRole && user.role !== allowedRole) {
+    const destination = user.role === 'RECRUITER' ? '/recruiter' : user.role === 'APPLICANT' ? '/dashboard' : '/'
+    return <Navigate to={destination} replace />
   }
 
   return children

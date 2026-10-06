@@ -11,7 +11,7 @@ import { registerUser } from '../api/auth'
 export default function RegisterPage() {
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '', role: 'APPLICANT' })
   const [errors, setErrors] = useState({})
   const [serverError, setServerError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -49,7 +49,7 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      await registerUser(form.name.trim(), form.email.trim(), form.password)
+      await registerUser(form.name.trim(), form.email.trim(), form.password, form.role)
       navigate('/login', { state: { registered: true } })
     } catch (err) {
       const msg = err.response?.data?.detail || 'Registration failed. Please try again.'
@@ -97,6 +97,15 @@ export default function RegisterPage() {
               error={errors.name}
               autoComplete="name"
             />
+
+            <div>
+              <label htmlFor="account-role" className="mb-1.5 block text-sm font-medium text-slate-300">I’m joining as</label>
+              <select id="account-role" name="role" value={form.role} onChange={handleChange} className="w-full rounded-xl border border-slate-600 bg-slate-900 px-4 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                <option value="APPLICANT">Applicant</option>
+                <option value="RECRUITER">Recruiter</option>
+              </select>
+              <p className="mt-1.5 text-xs text-slate-500">{form.role === 'RECRUITER' ? 'Set up your company presence and recruiter workspace.' : 'Build your profile, manage resumes, and explore roles.'}</p>
+            </div>
 
             {/* Email */}
             <Field

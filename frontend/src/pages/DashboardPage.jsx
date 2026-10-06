@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 import AppLayout from '../components/AppLayout'
 import { useAuth } from '../store/useAuthStore'
+import { useEffect, useState } from 'react'
+import { listReadinessAnalyses } from '../api/readiness'
+import { listRoadmaps } from '../api/roadmaps'
 
 /**
  * DashboardPage — /dashboard  (protected)
@@ -15,6 +18,21 @@ import { useAuth } from '../store/useAuthStore'
  */
 export default function DashboardPage() {
   const { user } = useAuth()
+  const [latestReadiness, setLatestReadiness] = useState(null)
+  const [latestRoadmap, setLatestRoadmap] = useState(null)
+
+  useEffect(() => {
+    listReadinessAnalyses()
+      .then(({ data }) => setLatestReadiness(data[0] || null))
+      .catch(() => {})
+  }, [])
+  useEffect(() => {
+    listRoadmaps()
+      .then(({ data }) => setLatestRoadmap(data[0] || null))
+      .catch(() => {})
+  }, [])
+  const completedRoadmapItems = latestRoadmap?.items.filter((item) => item.completed).length || 0
+  const roadmapPercent = latestRoadmap?.items.length ? Math.round((completedRoadmapItems / latestRoadmap.items.length) * 100) : 0
   return (
     <AppLayout>
       <div className="mx-auto flex min-h-screen max-w-5xl items-center justify-center px-4 py-10">
@@ -47,11 +65,11 @@ export default function DashboardPage() {
           </Link>
 
           {/* Placeholder cards for future phases */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
             {[
               { icon: '📄', label: 'Resume',   desc: 'Manage your resume versions', to: '/resumes' },
               { icon: '💼', label: 'Jobs',      desc: 'Explore early-career roles', to: '/jobs' },
-              { icon: '🤖', label: 'AI Mentor', desc: 'Get a personalised roadmap'  },
+              { icon: '✦', label: 'Job Readiness', desc: latestReadiness ? `Latest fit: ${latestReadiness.readiness_percentage}% for ${latestReadiness.job.title}` : 'Compare a resume with a role', to: '/readiness' },
             ].map((card) => card.to ? (
                 <Link
                   key={card.label}
@@ -76,6 +94,12 @@ export default function DashboardPage() {
                 </span>
               </div>
             )}
+            {latestRoadmap && <Link to="/roadmap" className="bg-slate-800 border border-slate-700 rounded-xl p-4 transition hover:border-indigo-500/50 hover:bg-slate-800/80">
+              <div className="mb-2 flex items-center justify-between"><span className="text-2xl">🧭</span><span className="text-xs font-semibold text-indigo-300">{roadmapPercent}%</span></div>
+              <p className="text-sm font-semibold text-slate-200">Career Roadmap</p>
+              <p className="mt-0.5 truncate text-xs text-slate-500">{completedRoadmapItems} of {latestRoadmap.items.length} steps complete</p>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-700"><div className="h-full rounded-full bg-indigo-400" style={{ width: `${roadmapPercent}%` }} /></div>
+            </Link>}
           </div>
 
         </div>

@@ -8,10 +8,10 @@ class User(Base):
     """
     Represents a registered CareerForge user.
 
-    Roles (stored as plain string for simplicity):
-      APPLICANT  — default for students
-      RECRUITER  — future phase
-      ADMIN      — future phase
+    Roles are stored as plain strings for compatibility with existing users:
+      APPLICANT  — default student account
+      RECRUITER  — recruiter workspace account
+      ADMIN      — reserved for future administration features
     """
     __tablename__ = "users"
 
@@ -28,3 +28,7 @@ class User(Base):
     profile = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")
     resumes = relationship("Resume", back_populates="user", cascade="all, delete-orphan")
     applications = relationship("Application", back_populates="user", cascade="all, delete-orphan")
+    readiness_analyses = relationship("ReadinessAnalysis", back_populates="user", cascade="all, delete-orphan")
+    roadmaps = relationship("Roadmap", back_populates="user", cascade="all, delete-orphan")
+    recruiter_profile = relationship("RecruiterProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    recruiter_jobs = relationship("Job", back_populates="recruiter")

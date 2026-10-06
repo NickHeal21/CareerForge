@@ -13,6 +13,7 @@ class Settings(BaseSettings):
 
     # Gemini
     gemini_api_key: str = ""
+    gemini_model: str = "gemini-3.8-flash"
 
     # App
     app_env: str = "development"
