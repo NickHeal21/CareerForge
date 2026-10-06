@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.database import create_tables
-from app.routes import health
+import app.models  # noqa: F401 — registers all models with SQLAlchemy before create_tables()
+from app.routes import health, auth, profile, resumes, jobs, applications
+from app.seed import seed_jobs
 
 settings = get_settings()
 
@@ -34,9 +36,13 @@ app.add_middleware(
 # Routers
 # ---------------------------------------------------------------------------
 app.include_router(health.router, prefix="/api")
+app.include_router(auth.router,   prefix="/api/auth")
+app.include_router(profile.router, prefix="/api/profile")
+app.include_router(resumes.router, prefix="/api/resumes")
+app.include_router(jobs.router, prefix="/api/jobs")
+app.include_router(applications.router, prefix="/api/applications")
 
-# Future routers go here, e.g.:
-# app.include_router(auth.router,    prefix="/api/auth",    tags=["auth"])
+# Future routers (uncomment as phases progress):
 # app.include_router(resumes.router, prefix="/api/resumes", tags=["resumes"])
 # app.include_router(jobs.router,    prefix="/api/jobs",    tags=["jobs"])
 
@@ -46,9 +52,10 @@ app.include_router(health.router, prefix="/api")
 @app.on_event("startup")
 def on_startup():
     create_tables()
-    print("✅ CareerForge API started")
-    print(f"   Environment : {settings.app_env}")
-    print(f"   Database URL: {settings.database_url[:40]}...")
+    seed_jobs()
+    print("[OK] CareerForge API started")
+    print(f"     Environment : {settings.app_env}")
+    print(f"     Database URL: {settings.database_url[:40]}...")
 
 
 # ---------------------------------------------------------------------------

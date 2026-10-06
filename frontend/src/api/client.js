@@ -3,12 +3,11 @@ import axios from 'axios'
 /**
  * Pre-configured Axios instance.
  *
- * Base URL is empty so that Vite's dev-server proxy forwards /api/*
- * to http://localhost:8000 automatically.
- * In production you would set VITE_API_URL in the environment.
+ * Use the current local backend by default. Deployments can override this
+ * with VITE_API_URL while preserving the /api/* route paths in each module.
  */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -32,8 +31,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid — clear storage (auth will handle redirect)
+      // Token expired or invalid — clear both keys
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
     }
     return Promise.reject(error)
   },
