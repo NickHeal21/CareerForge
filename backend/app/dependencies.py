@@ -77,13 +77,24 @@ def get_current_user(
     return user
 
 
-def get_current_recruiter(current_user=Depends(get_current_user)):
-    """Require the existing authenticated account to have the recruiter role."""
+def get_current_recruiter_account(current_user=Depends(get_current_user)):
+    """Require an authenticated recruiter account, including pending recruiters."""
     if current_user.role != "RECRUITER":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Recruiter access is required.",
         )
+    return current_user
+
+
+def get_current_recruiter(current_user=Depends(get_current_recruiter_account)):
+    """Require recruiter role and admin approval for recruiter workspace APIs."""
+    if current_user.verification_status != "APPROVED":
+        if current_user.verification_status == "DENIED":
+            detail = "Your recruiter verification was denied. Check the verification page for the administrator's note."
+        else:
+            detail = "Your recruiter account is awaiting admin approval."
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
     return current_user
 
 

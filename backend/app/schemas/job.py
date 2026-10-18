@@ -13,6 +13,7 @@ class JobResponse(BaseModel):
     required_skills: str
     application_url: str
     recruiter_id: int | None = None
+    company_logo: str | None = None
     created_at: datetime
 
 

@@ -46,6 +46,7 @@ class UserResponse(BaseModel):
     name: str
     email: str
     role: str
+    verification_status: str = "NOT_REQUIRED"
     created_at: datetime
 
     class Config:

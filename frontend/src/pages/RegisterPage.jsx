@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { registerUser } from '../api/auth'
+import { useAuth } from '../store/useAuthStore'
 
 /**
  * RegisterPage — /register
  *
  * Fields: Name, Email, Password, Confirm Password.
- * On success, redirects to /login with a success message.
+ * Applicants continue to /login; recruiters start a JWT session and continue to verification.
  */
 export default function RegisterPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '', role: 'APPLICANT' })
   const [errors, setErrors] = useState({})
@@ -49,10 +51,16 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      await registerUser(form.name.trim(), form.email.trim(), form.password, form.role)
-      navigate('/login', { state: { registered: true } })
+      const response = await registerUser(form.name.trim(), form.email.trim(), form.password, form.role)
+      if (form.role === 'RECRUITER' && response.data?.access_token) {
+        login(response.data)
+        navigate('/recruiter/verification', { replace: true })
+      } else {
+        navigate('/login', { state: { registered: true } })
+      }
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Registration failed. Please try again.'
+      const detail = err.response?.data?.detail
+      const msg = typeof detail === 'string' ? detail : Array.isArray(detail) ? detail.map((item) => item?.msg).filter(Boolean).join('. ') : 'Registration failed. Please try again.'
       setServerError(msg)
     } finally {
       setLoading(false)
@@ -104,7 +112,7 @@ export default function RegisterPage() {
                 <option value="APPLICANT">Applicant</option>
                 <option value="RECRUITER">Recruiter</option>
               </select>
-              <p className="mt-1.5 text-xs text-slate-500">{form.role === 'RECRUITER' ? 'Set up your company presence and recruiter workspace.' : 'Build your profile, manage resumes, and explore roles.'}</p>
+              <p className="mt-1.5 text-xs text-slate-500">{form.role === 'RECRUITER' ? 'Submit company documents for admin review before using recruiter tools.' : 'Build your profile, manage resumes, and explore roles.'}</p>
             </div>
 
             {/* Email */}

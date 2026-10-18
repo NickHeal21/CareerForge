@@ -27,3 +27,19 @@ export function getAdminJob(id) {
 export function listAdminApplications(params = {}) {
   return api.get('/api/admin/applications', { params })
 }
+
+export function listAdminRecruiterVerifications(params = {}) {
+  return api.get('/api/admin/recruiter-verifications', { params })
+}
+
+export function getAdminRecruiterVerification(id) {
+  return api.get(`/api/admin/recruiter-verifications/${id}`)
+}
+
+export function getAdminVerificationDocument(verificationId, documentId) {
+  return api.get(`/api/admin/recruiter-verifications/${verificationId}/documents/${documentId}`, { responseType: 'blob' })
+}
+
+export function reviewAdminRecruiterVerification(id, status, adminNote = null) {
+  return api.patch(`/api/admin/recruiter-verifications/${id}`, { status, admin_note: adminNote })
+}

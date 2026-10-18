@@ -20,6 +20,9 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(20), nullable=False, default="APPLICANT")
+    verification_status: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="NOT_REQUIRED", server_default="NOT_REQUIRED"
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),  # PostgreSQL sets this automatically
@@ -32,3 +35,10 @@ class User(Base):
     roadmaps = relationship("Roadmap", back_populates="user", cascade="all, delete-orphan")
     recruiter_profile = relationship("RecruiterProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
     recruiter_jobs = relationship("Job", back_populates="recruiter")
+    recruiter_verification = relationship(
+        "RecruiterVerification", back_populates="user", uselist=False, cascade="all, delete-orphan",
+        foreign_keys="RecruiterVerification.user_id",
+    )
+    reviewed_verifications = relationship(
+        "RecruiterVerification", back_populates="reviewer", foreign_keys="RecruiterVerification.reviewed_by"
+    )

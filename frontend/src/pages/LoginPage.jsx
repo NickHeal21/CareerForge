@@ -4,7 +4,7 @@ import { loginUser } from '../api/auth'
 import { useAuth } from '../store/useAuthStore'
 
 function dashboardPath(account) {
-  return account?.role === 'ADMIN' ? '/admin' : account?.role === 'RECRUITER' ? '/recruiter' : account?.role === 'APPLICANT' ? '/dashboard' : '/'
+  return account?.role === 'ADMIN' ? '/admin' : account?.role === 'RECRUITER' ? account.verification_status === 'APPROVED' ? '/recruiter' : '/recruiter/verification' : account?.role === 'APPLICANT' ? '/dashboard' : '/'
 }
 
 /**
@@ -55,7 +55,8 @@ export default function LoginPage() {
       login(res.data)                         // store token + user in context + localStorage
       navigate(dashboardPath(res.data.user), { replace: true })
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Login failed. Please try again.'
+      const detail = err.response?.data?.detail
+      const msg = typeof detail === 'string' ? detail : Array.isArray(detail) ? detail.map((item) => item?.msg).filter(Boolean).join('. ') : 'Login failed. Please try again.'
       setServerError(msg)
     } finally {
       setLoading(false)

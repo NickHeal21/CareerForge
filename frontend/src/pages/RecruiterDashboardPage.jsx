@@ -4,6 +4,7 @@ import AppLayout from '../components/AppLayout'
 import { useAuth } from '../store/useAuthStore'
 import { getRecruiterProfile } from '../api/recruiter'
 import { listRecruiterJobs } from '../api/recruiter'
+import CompanyLogo from '../components/CompanyLogo'
 
 const profileFields = ['company_name', 'company_logo', 'designation', 'company_description', 'location', 'website']
 
@@ -36,7 +37,7 @@ export default function RecruiterDashboardPage() {
       <header className="overflow-hidden rounded-3xl border border-slate-700 bg-gradient-to-br from-indigo-950/70 via-slate-800 to-slate-900 p-6 shadow-2xl shadow-black/20 sm:p-9">
         <p className="text-sm font-medium text-indigo-300">Recruiter workspace</p>
         <div className="mt-2 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div><h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Welcome, {user?.name}</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-300">Your company space is ready. Complete your profile to establish a clear presence on CareerForge.</p></div>
+          <div className="flex items-center gap-4">{profile?.company_logo && <CompanyLogo value={profile.company_logo} name={profile.company_name} className="h-14 w-14" textClassName="text-xl" />}<div><h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Welcome, {user?.name}</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-300">Your company space is ready. Complete your profile to establish a clear presence on CareerForge.</p></div></div>
           <Link to="/recruiter/profile" className="inline-flex w-fit items-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">{completion ? 'Edit company profile' : 'Set up company profile'} <span className="ml-2">→</span></Link>
         </div>
       </header>

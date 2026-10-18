@@ -4,8 +4,28 @@ export function getRecruiterProfile() {
   return api.get('/api/recruiter/profile')
 }
 
+export function getRecruiterVerificationStatus() {
+  return api.get('/api/recruiter/verification-status')
+}
+
+export function submitRecruiterVerificationDocuments(companyId, aadhaar, pan) {
+  const formData = new FormData()
+  formData.append('company_id', companyId)
+  if (aadhaar) formData.append('aadhaar', aadhaar)
+  if (pan) formData.append('pan', pan)
+  // Clear Axios's shared JSON content type so the browser sets the multipart boundary.
+  return api.post('/api/recruiter/verification-documents', formData, { headers: { 'Content-Type': undefined } })
+}
+
 export function updateRecruiterProfile(profile) {
   return api.put('/api/recruiter/profile', profile)
+}
+
+export function uploadCompanyLogo(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  // Let the browser add the multipart boundary while preserving the auth interceptor.
+  return api.post('/api/recruiter/profile/logo', formData, { headers: { 'Content-Type': undefined } })
 }
 
 export function listRecruiterJobs() {

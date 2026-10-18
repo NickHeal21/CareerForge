@@ -15,7 +15,7 @@ router = APIRouter(tags=["auth"])
 
 @router.post(
     "/register",
-    response_model=UserResponse,
+    response_model=UserResponse | TokenResponse,
     status_code=status.HTTP_201_CREATED,
 )
 def register(body: UserRegister, db: Session = Depends(get_db)):
@@ -45,11 +45,17 @@ def register(body: UserRegister, db: Session = Depends(get_db)):
         email=body.email,
         password_hash=hashed,
         role=body.role,
+        verification_status="PENDING" if body.role == "RECRUITER" else "NOT_REQUIRED",
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)   # load auto-generated id / created_at from DB
 
+    if new_user.role == "RECRUITER":
+        return TokenResponse(
+            access_token=create_access_token({"sub": str(new_user.id)}),
+            user=UserResponse.model_validate(new_user),
+        )
     return new_user
 
 

@@ -37,3 +37,12 @@ def create_tables():
             connection.execute(text(
                 "ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profile_image VARCHAR(255)"
             ))
+            connection.execute(text(
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_status "
+                "VARCHAR(20) NOT NULL DEFAULT 'NOT_REQUIRED'"
+            ))
+            # Existing recruiters must be reviewed once; approved/denied statuses are never reset.
+            connection.execute(text(
+                "UPDATE users SET verification_status = 'PENDING' "
+                "WHERE role = 'RECRUITER' AND verification_status = 'NOT_REQUIRED'"
+            ))

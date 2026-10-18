@@ -9,6 +9,7 @@ from app.models.application import Application  # noqa: F401 — Phase 4B
 from app.models.readiness_analysis import ReadinessAnalysis  # noqa: F401 — Phase 5
 from app.models.roadmap import Roadmap, RoadmapItem  # noqa: F401 — Phase 6
 from app.models.recruiter_profile import RecruiterProfile  # noqa: F401 — Phase 7A
+from app.models.recruiter_verification import RecruiterVerification, VerificationDocument  # noqa: F401 — Phase 9.5B
 
 # Future models (uncomment as phases progress):
 # from app.models.resume import Resume

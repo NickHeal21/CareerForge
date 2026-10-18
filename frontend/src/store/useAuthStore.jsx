@@ -55,6 +55,13 @@ export function AuthProvider({ children }) {
     setUser(userData)
   }, [])
 
+  const refreshUser = useCallback(async () => {
+    const response = await api.get('/api/auth/me')
+    setUser(response.data)
+    localStorage.setItem('user', JSON.stringify(response.data))
+    return response.data
+  }, [])
+
   // ---------------------------------------------------------------------------
   // logout — clears state and storage
   // ---------------------------------------------------------------------------
@@ -65,7 +72,7 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
-  const value = { user, token, loading, login, logout }
+  const value = { user, token, loading, login, logout, refreshUser }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import AppLayout from '../components/AppLayout'
-import { getRecruiterProfile, updateRecruiterProfile } from '../api/recruiter'
+import CompanyLogo from '../components/CompanyLogo'
+import { getRecruiterProfile, updateRecruiterProfile, uploadCompanyLogo } from '../api/recruiter'
+import { companyLogoUrl } from '../utils/companyLogo'
 
 const emptyProfile = {
   company_name: '', company_logo: '', designation: '', company_description: '', location: '', website: '',
@@ -22,6 +24,10 @@ export default function RecruiterProfilePage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const fileInput = useRef(null)
 
   useEffect(() => {
     getRecruiterProfile()
@@ -29,6 +35,8 @@ export default function RecruiterProfilePage() {
       .catch((err) => setError(friendlyError(err, 'Your company profile could not be loaded. Please try again.')))
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => () => { if (previewUrl) URL.revokeObjectURL(previewUrl) }, [previewUrl])
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -41,11 +49,11 @@ export default function RecruiterProfilePage() {
     setError('')
     setSuccess(false)
     setSaving(true)
-    const payload = Object.fromEntries(Object.entries(form).map(([key, value]) => [key, value.trim() || null]))
+    const payload = Object.fromEntries(Object.entries(form).filter(([key]) => key !== 'company_logo').map(([key, value]) => [key, value.trim() || null]))
     try {
       const { data } = await updateRecruiterProfile(payload)
       setForm(Object.fromEntries(Object.keys(emptyProfile).map((key) => [key, data[key] ?? ''])))
-      setSuccess(true)
+      setSuccess('profile')
     } catch (err) {
       setError(friendlyError(err, 'Your company profile could not be saved. Check the details and try again.'))
     } finally {
@@ -53,24 +61,67 @@ export default function RecruiterProfilePage() {
     }
   }
 
-  const initials = form.company_name.trim().split(/\s+/).slice(0, 2).map((word) => word[0]).join('').toUpperCase() || 'CO'
+  function chooseLogo(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    setError('')
+    setSelectedFile(null)
+    setPreviewUrl('')
+    if (!['image/jpeg', 'image/png'].includes(file.type) || !/\.(jpe?g|png)$/i.test(file.name)) {
+      setError('Choose a JPG, JPEG, or PNG image.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Company logos must be 5 MB or smaller.')
+      return
+    }
+    setPreviewUrl(URL.createObjectURL(file))
+    setSelectedFile(file)
+    setSuccess(false)
+  }
+
+  async function handleLogoUpload() {
+    if (!selectedFile) return
+    setError('')
+    setSuccess(false)
+    setUploading(true)
+    try {
+      const { data } = await uploadCompanyLogo(selectedFile)
+      setForm((current) => ({ ...current, company_logo: data.company_logo || '' }))
+      setSelectedFile(null)
+      setPreviewUrl('')
+      setSuccess('logo')
+    } catch (err) {
+      setError(friendlyError(err, 'The company logo could not be uploaded. Please try again.'))
+    } finally {
+      setUploading(false)
+    }
+  }
 
   return <AppLayout>
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-8 sm:py-10">
       <header className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div><p className="text-sm font-medium text-indigo-300">Recruiter workspace</p><h1 className="mt-1 text-3xl font-bold tracking-tight text-white">Company profile</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Introduce your organization and the person representing it.</p></div>
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-800/60 px-4 py-3"><div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl border border-slate-600 bg-slate-900 text-sm font-bold text-indigo-200">{form.company_logo ? <img src={form.company_logo} alt={`${form.company_name || 'Company'} logo`} className="h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = 'none' }} /> : initials}</div><div><p className="text-xs uppercase tracking-wide text-slate-500">Company preview</p><p className="mt-0.5 max-w-48 truncate text-sm font-semibold text-white">{form.company_name || 'Your company'}</p></div></div>
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-800/60 px-4 py-3"><CompanyLogo value={previewUrl || companyLogoUrl(form.company_logo)} name={form.company_name || 'Your company'} className="h-12 w-12" textClassName="text-sm" /><div><p className="text-xs uppercase tracking-wide text-slate-500">Company preview</p><p className="mt-0.5 max-w-48 truncate text-sm font-semibold text-white">{form.company_name || 'Your company'}</p></div></div>
       </header>
 
       {error && <div role="alert" className="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</div>}
-      {success && <div role="status" className="mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">Company profile saved successfully.</div>}
+      {success && <div role="status" className="mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">{success === 'logo' ? 'Company logo uploaded successfully.' : 'Company profile saved successfully.'}</div>}
 
       {loading ? <div aria-label="Loading company profile" className="h-[34rem] animate-pulse rounded-2xl border border-slate-800 bg-slate-800/50" /> : <form onSubmit={handleSubmit} className="space-y-5">
         <section className="rounded-2xl border border-slate-700/80 bg-slate-800/70 p-5 shadow-lg shadow-black/10 sm:p-6">
           <div className="mb-5 flex items-start gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/15 text-sm font-semibold text-indigo-300">01</span><div><h2 className="font-semibold text-white">Organization</h2><p className="mt-1 text-sm text-slate-400">Add the key details candidates should know about your company.</p></div></div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field name="company_name" label="Company name" value={form.company_name} onChange={handleChange} placeholder="e.g. Northstar Labs" />
-            <Field name="company_logo" label="Company logo URL" value={form.company_logo} onChange={handleChange} placeholder="https://example.com/logo.png" type="url" />
+            <div className="sm:col-span-2 rounded-xl border border-slate-700 bg-slate-900/60 p-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <CompanyLogo value={previewUrl || companyLogoUrl(form.company_logo)} name={form.company_name || 'Company'} className="h-20 w-20 rounded-2xl" textClassName="text-2xl" />
+                <div className="min-w-0 flex-1"><h3 className="text-sm font-semibold text-white">Company logo</h3><p className="mt-1 text-xs text-slate-400">JPG, JPEG, or PNG · maximum 5 MB</p>{selectedFile && <p className="mt-2 truncate text-xs text-indigo-200">Selected: {selectedFile.name}</p>}
+                  <div className="mt-3 flex flex-wrap gap-2"><input ref={fileInput} type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" onChange={chooseLogo} className="sr-only" /><button type="button" onClick={() => fileInput.current?.click()} className="rounded-lg border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800">{form.company_logo ? 'Replace logo' : 'Upload logo'}</button>{selectedFile && <><button type="button" disabled={uploading} onClick={handleLogoUpload} className="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">{uploading ? 'Uploading…' : 'Save logo'}</button><button type="button" disabled={uploading} onClick={() => { setSelectedFile(null); setPreviewUrl('') }} className="rounded-lg px-3 py-2 text-xs text-slate-400 hover:bg-slate-800">Cancel</button></>}</div>
+                </div>
+              </div>
+            </div>
             <Field name="location" label="Location" value={form.location} onChange={handleChange} placeholder="City, country or remote" />
             <Field name="website" label="Company website" value={form.website} onChange={handleChange} placeholder="https://company.com" type="url" />
             <div className="sm:col-span-2"><Field name="company_description" label="Company description" value={form.company_description} onChange={handleChange} placeholder="Tell candidates about your team, mission, and work." multiline /></div>

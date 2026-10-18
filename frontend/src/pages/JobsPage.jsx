@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AppLayout from '../components/AppLayout'
+import CompanyLogo from '../components/CompanyLogo'
 import { listResumes } from '../api/resumes'
 import { applyToJob, listJobs } from '../api/jobs'
 
@@ -108,7 +109,7 @@ export default function JobsPage() {
           <div className="grid gap-4 md:grid-cols-2">
             {visibleJobs.map((job) => <article key={job.id} className="flex flex-col rounded-2xl border border-slate-700/80 bg-slate-800/70 p-5 shadow-lg shadow-black/10 transition hover:border-slate-600">
               <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500/15 text-lg font-bold text-indigo-300">{job.company_name.charAt(0)}</div>
+                <CompanyLogo value={job.company_logo} name={job.company_name} />
                 <div className="min-w-0 flex-1">
                   <h2 className="font-semibold text-white">{job.title}</h2>
                   <p className="mt-1 text-sm text-indigo-200">{job.company_name}</p>
@@ -132,7 +133,7 @@ export default function JobsPage() {
       {selectedJob && <div className="fixed inset-0 z-20 overflow-y-auto bg-black/70 p-4" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedJob(null) }}>
         <section role="dialog" aria-modal="true" aria-labelledby="job-detail-title" className="mx-auto my-6 max-w-2xl rounded-2xl border border-slate-700 bg-slate-800 p-5 shadow-2xl sm:my-12 sm:p-7">
           <div className="flex items-start justify-between gap-4">
-            <div><p className="text-sm font-medium text-indigo-300">{selectedJob.company_name}</p><h2 id="job-detail-title" className="mt-1 text-2xl font-bold text-white">{selectedJob.title}</h2><p className="mt-2 text-sm text-slate-400">{selectedJob.location}</p></div>
+            <div className="flex items-center gap-3"><CompanyLogo value={selectedJob.company_logo} name={selectedJob.company_name} className="h-14 w-14" textClassName="text-xl" /><div><p className="text-sm font-medium text-indigo-300">{selectedJob.company_name}</p><h2 id="job-detail-title" className="mt-1 text-2xl font-bold text-white">{selectedJob.title}</h2><p className="mt-2 text-sm text-slate-400">{selectedJob.location}</p></div></div>
             <button aria-label="Close job details" onClick={() => setSelectedJob(null)} className="rounded-lg px-2 py-1 text-xl text-slate-400 hover:bg-slate-700 hover:text-white">×</button>
           </div>
           <div className="mt-6 border-t border-slate-700 pt-5">

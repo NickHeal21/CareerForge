@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../store/useAuthStore'
 
 /**
@@ -14,6 +14,7 @@ import { useAuth } from '../store/useAuthStore'
  */
 export default function ProtectedRoute({ children, allowedRole }) {
   const { user, loading } = useAuth()
+  const location = useLocation()
 
   // Still checking localStorage token against the backend — avoid flash redirect
   if (loading) {
@@ -29,8 +30,18 @@ export default function ProtectedRoute({ children, allowedRole }) {
   }
 
   if (allowedRole && user.role !== allowedRole) {
-    const destination = user.role === 'ADMIN' ? '/admin' : user.role === 'RECRUITER' ? '/recruiter' : user.role === 'APPLICANT' ? '/dashboard' : '/'
+    const destination = user.role === 'ADMIN' ? '/admin' : user.role === 'RECRUITER' ? user.verification_status === 'APPROVED' ? '/recruiter' : '/recruiter/verification' : user.role === 'APPLICANT' ? '/dashboard' : '/'
     return <Navigate to={destination} replace />
+  }
+
+  if (user.role === 'RECRUITER') {
+    const onVerificationPage = location.pathname === '/recruiter/verification'
+    if (user.verification_status !== 'APPROVED' && !onVerificationPage) {
+      return <Navigate to="/recruiter/verification" replace />
+    }
+    if (user.verification_status === 'APPROVED' && onVerificationPage) {
+      return <Navigate to="/recruiter" replace />
+    }
   }
 
   return children

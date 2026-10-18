@@ -5,7 +5,6 @@ from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 class RecruiterProfileUpdate(BaseModel):
     company_name: str | None = Field(default=None, max_length=180)
-    company_logo: HttpUrl | None = None
     designation: str | None = Field(default=None, max_length=150)
     company_description: str | None = Field(default=None, max_length=5000)
     location: str | None = Field(default=None, max_length=180)

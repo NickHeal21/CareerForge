@@ -12,7 +12,8 @@ export default function AppLayout({ children }) {
 
   const navClass = ({ isActive }) =>
     `rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive ? 'bg-indigo-500/15 text-indigo-300' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`
-  const isRecruiter = user?.role === 'RECRUITER'
+  const isRecruiter = user?.role === 'RECRUITER' && user?.verification_status === 'APPROVED'
+  const isPendingRecruiter = user?.role === 'RECRUITER' && !isRecruiter
   const isAdmin = user?.role === 'ADMIN'
 
   return (
@@ -26,8 +27,11 @@ export default function AppLayout({ children }) {
             <NavLink to="/admin" end className={navClass}>Dashboard</NavLink>
             <NavLink to="/admin/users" className={navClass}>Users</NavLink>
             <NavLink to="/admin/recruiters" className={navClass}>Recruiters</NavLink>
+            <NavLink to="/admin/recruiter-verifications" className={navClass}>Recruiter Verification</NavLink>
             <NavLink to="/admin/jobs" className={navClass}>Jobs</NavLink>
             <NavLink to="/admin/applications" className={navClass}>Applications</NavLink>
+          </> : isPendingRecruiter ? <>
+            <NavLink to="/recruiter/verification" className={navClass}>Recruiter Verification</NavLink>
           </> : isRecruiter ? <>
             <NavLink to="/recruiter" end className={navClass}>Dashboard</NavLink>
             <NavLink to="/recruiter/profile" className={navClass}>Company Profile</NavLink>

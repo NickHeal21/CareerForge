@@ -23,6 +23,9 @@ import AdminUsersPage from './pages/AdminUsersPage'
 import AdminRecruitersPage from './pages/AdminRecruitersPage'
 import AdminJobsPage from './pages/AdminJobsPage'
 import AdminApplicationsPage from './pages/AdminApplicationsPage'
+import RecruiterVerificationPage from './pages/RecruiterVerificationPage'
+import AdminRecruiterVerificationsPage from './pages/AdminRecruiterVerificationsPage'
+import AdminRecruiterVerificationDetailPage from './pages/AdminRecruiterVerificationDetailPage'
 
 /**
  * App — root component.
@@ -60,6 +63,9 @@ export default function App() {
         <Route path="/admin/recruiters" element={<ProtectedRoute allowedRole="ADMIN"><AdminRecruitersPage /></ProtectedRoute>} />
         <Route path="/admin/jobs" element={<ProtectedRoute allowedRole="ADMIN"><AdminJobsPage /></ProtectedRoute>} />
         <Route path="/admin/applications" element={<ProtectedRoute allowedRole="ADMIN"><AdminApplicationsPage /></ProtectedRoute>} />
+        <Route path="/admin/recruiter-verifications" element={<ProtectedRoute allowedRole="ADMIN"><AdminRecruiterVerificationsPage /></ProtectedRoute>} />
+        <Route path="/admin/recruiter-verifications/:verificationId" element={<ProtectedRoute allowedRole="ADMIN"><AdminRecruiterVerificationDetailPage /></ProtectedRoute>} />
+        <Route path="/recruiter/verification" element={<ProtectedRoute allowedRole="RECRUITER"><RecruiterVerificationPage /></ProtectedRoute>} />
         <Route path="/recruiter" element={<ProtectedRoute allowedRole="RECRUITER"><RecruiterDashboardPage /></ProtectedRoute>} />
         <Route path="/recruiter/profile" element={<ProtectedRoute allowedRole="RECRUITER"><RecruiterProfilePage /></ProtectedRoute>} />
         <Route path="/recruiter/jobs" element={<ProtectedRoute allowedRole="RECRUITER"><RecruiterJobsPage /></ProtectedRoute>} />

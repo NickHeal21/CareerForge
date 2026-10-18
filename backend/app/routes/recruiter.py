@@ -1,4 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import logging
+from pathlib import Path
+from uuid import uuid4
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
@@ -29,6 +33,14 @@ from app.schemas.recruiter_profile import RecruiterProfileResponse, RecruiterPro
 router = APIRouter(tags=["recruiter"])
 
 APPLICATION_STATUSES = {"APPLIED", "SHORTLISTED", "INTERVIEW", "REJECTED", "HIRED"}
+logger = logging.getLogger(__name__)
+COMPANY_LOGO_DIRECTORY = Path(__file__).resolve().parents[2] / "uploads" / "company_logos"
+MAX_COMPANY_LOGO_BYTES = 5 * 1024 * 1024
+COMPANY_LOGO_TYPES = {
+    ".jpg": ("image/jpeg", b"\xff\xd8\xff"),
+    ".jpeg": ("image/jpeg", b"\xff\xd8\xff"),
+    ".png": ("image/png", b"\x89PNG\r\n\x1a\n"),
+}
 
 
 def owned_job(job_id: int, recruiter: User, db: Session) -> Job:
@@ -266,8 +278,82 @@ def update_recruiter_profile(
         db.add(profile)
 
     for field, value in body.model_dump().items():
-        setattr(profile, field, str(value) if value is not None and field in ("company_logo", "website") else value)
+        setattr(profile, field, str(value) if value is not None and field == "website" else value)
 
     db.commit()
     db.refresh(profile)
+    return profile
+
+
+@router.post("/profile/logo", response_model=RecruiterProfileResponse)
+async def upload_company_logo(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_recruiter),
+    db: Session = Depends(get_db),
+):
+    """Upload or replace the authenticated, approved recruiter's company logo."""
+    suffix = Path(file.filename or "").suffix.lower()
+    expected = COMPANY_LOGO_TYPES.get(suffix)
+    if expected is None:
+        await file.close()
+        raise HTTPException(status_code=400, detail="Please choose a JPG, JPEG, or PNG image.")
+
+    media_type, signature = expected
+    if file.content_type not in (media_type, "application/octet-stream"):
+        await file.close()
+        raise HTTPException(status_code=400, detail="The selected image type does not match JPG, JPEG, or PNG.")
+
+    try:
+        content = await file.read(MAX_COMPANY_LOGO_BYTES + 1)
+    finally:
+        await file.close()
+    if not content:
+        raise HTTPException(status_code=400, detail="The selected image is empty.")
+    if len(content) > MAX_COMPANY_LOGO_BYTES:
+        raise HTTPException(status_code=413, detail="Company logos must be 5 MB or smaller.")
+
+    valid_signature = content.startswith(signature)
+    if suffix == ".png":
+        valid_signature = valid_signature and content[12:16] == b"IHDR"
+    if not valid_signature:
+        raise HTTPException(status_code=400, detail="The file contents are not a valid JPG or PNG image.")
+
+    filename = f"recruiter-{current_user.id}-{uuid4().hex}{suffix}"
+    stored_path = COMPANY_LOGO_DIRECTORY / filename
+    try:
+        COMPANY_LOGO_DIRECTORY.mkdir(parents=True, exist_ok=True)
+        stored_path.write_bytes(content)
+    except OSError as exc:
+        try:
+            stored_path.unlink(missing_ok=True)
+        except OSError:
+            logger.warning("Could not clean up a partially written company logo")
+        logger.exception("Could not store recruiter company logo")
+        raise HTTPException(status_code=500, detail="The company logo could not be saved. Please try again.") from exc
+
+    try:
+        profile = db.query(RecruiterProfile).filter(RecruiterProfile.user_id == current_user.id).first()
+        if profile is None:
+            profile = RecruiterProfile(user_id=current_user.id)
+            db.add(profile)
+        old_filename = profile.company_logo
+        profile.company_logo = filename
+        db.commit()
+        db.refresh(profile)
+    except SQLAlchemyError as exc:
+        db.rollback()
+        try:
+            stored_path.unlink(missing_ok=True)
+        except OSError:
+            logger.warning("Could not clean up an unreferenced company logo after a database error")
+        logger.exception("Could not update recruiter company logo reference")
+        raise HTTPException(status_code=500, detail="The company logo could not be saved. Please try again.") from exc
+
+    if old_filename and old_filename != filename and Path(old_filename).name == old_filename and old_filename.startswith(f"recruiter-{current_user.id}-"):
+        old_path = (COMPANY_LOGO_DIRECTORY / old_filename).resolve()
+        if old_path.parent == COMPANY_LOGO_DIRECTORY.resolve():
+            try:
+                old_path.unlink(missing_ok=True)
+            except OSError:
+                logger.warning("Could not remove replaced company logo for recruiter %s", current_user.id)
     return profile
