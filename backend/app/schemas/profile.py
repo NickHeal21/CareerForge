@@ -23,6 +23,7 @@ class ProfileResponse(BaseModel):
 
     id: int | None = None
     user_id: int
+    profile_image: str | None = None
     phone: str | None = None
     location: str | None = None
     bio: str | None = None

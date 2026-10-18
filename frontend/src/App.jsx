@@ -18,6 +18,11 @@ import RecruiterProfilePage from './pages/RecruiterProfilePage'
 import RecruiterJobsPage from './pages/RecruiterJobsPage'
 import RecruiterApplicantsPage from './pages/RecruiterApplicantsPage'
 import RecruiterCandidatePage from './pages/RecruiterCandidatePage'
+import AdminDashboardPage from './pages/AdminDashboardPage'
+import AdminUsersPage from './pages/AdminUsersPage'
+import AdminRecruitersPage from './pages/AdminRecruitersPage'
+import AdminJobsPage from './pages/AdminJobsPage'
+import AdminApplicationsPage from './pages/AdminApplicationsPage'
 
 /**
  * App — root component.
@@ -50,6 +55,11 @@ export default function App() {
         <Route path="/readiness" element={<ProtectedRoute allowedRole="APPLICANT"><ReadinessPage /></ProtectedRoute>} />
         <Route path="/roadmap" element={<ProtectedRoute allowedRole="APPLICANT"><RoadmapPage /></ProtectedRoute>} />
         <Route path="/mentor" element={<ProtectedRoute allowedRole="APPLICANT"><MentorPage /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute allowedRole="ADMIN"><AdminDashboardPage /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute allowedRole="ADMIN"><AdminUsersPage /></ProtectedRoute>} />
+        <Route path="/admin/recruiters" element={<ProtectedRoute allowedRole="ADMIN"><AdminRecruitersPage /></ProtectedRoute>} />
+        <Route path="/admin/jobs" element={<ProtectedRoute allowedRole="ADMIN"><AdminJobsPage /></ProtectedRoute>} />
+        <Route path="/admin/applications" element={<ProtectedRoute allowedRole="ADMIN"><AdminApplicationsPage /></ProtectedRoute>} />
         <Route path="/recruiter" element={<ProtectedRoute allowedRole="RECRUITER"><RecruiterDashboardPage /></ProtectedRoute>} />
         <Route path="/recruiter/profile" element={<ProtectedRoute allowedRole="RECRUITER"><RecruiterProfilePage /></ProtectedRoute>} />
         <Route path="/recruiter/jobs" element={<ProtectedRoute allowedRole="RECRUITER"><RecruiterJobsPage /></ProtectedRoute>} />

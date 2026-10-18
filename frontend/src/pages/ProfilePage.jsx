@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import AppLayout from '../components/AppLayout'
-import { getProfile, updateProfile } from '../api/profile'
+import ProfilePhotoAvatar from '../components/ProfilePhotoAvatar'
+import { getProfile, updateProfile, uploadProfilePhoto } from '../api/profile'
+import { useAuth } from '../store/useAuthStore'
 
 const emptyProfile = {
   phone: '', location: '', bio: '', tenth_percentage: '', twelfth_percentage: '',
@@ -25,16 +27,37 @@ const sections = [
 ]
 
 export default function ProfilePage() {
+  const { user } = useAuth()
   const [form, setForm] = useState(emptyProfile)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [profileImage, setProfileImage] = useState(null)
+  const [photoFile, setPhotoFile] = useState(null)
+  const [photoPreview, setPhotoPreview] = useState('')
+  const [photoError, setPhotoError] = useState('')
+  const [photoSuccess, setPhotoSuccess] = useState('')
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const photoInput = useRef(null)
+
+  useEffect(() => {
+    if (!photoFile) {
+      setPhotoPreview('')
+      return undefined
+    }
+    const url = URL.createObjectURL(photoFile)
+    setPhotoPreview(url)
+    return () => URL.revokeObjectURL(url)
+  }, [photoFile])
 
   useEffect(() => {
     getProfile()
-      .then(({ data }) => setForm(Object.fromEntries(Object.keys(emptyProfile).map((key) => [key, data[key] ?? '']))))
-      .catch((err) => setError(err.response?.data?.detail || 'We could not load your profile. Please try again.'))
+      .then(({ data }) => {
+        setForm(Object.fromEntries(Object.keys(emptyProfile).map((key) => [key, data[key] ?? ''])))
+        setProfileImage(data.profile_image ?? null)
+      })
+      .catch(() => setError('We could not load your profile. Please try again.'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -42,6 +65,48 @@ export default function ProfilePage() {
     const { name, value } = event.target
     setForm((current) => ({ ...current, [name]: value }))
     setSuccess(false)
+  }
+
+  function handlePhotoSelect(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    setPhotoError('')
+    setPhotoSuccess('')
+    if (!file) return
+    const validTypes = ['image/jpeg', 'image/png']
+    const validExtension = /\.(jpe?g|png)$/i.test(file.name)
+    if (!validExtension || (file.type && !validTypes.includes(file.type))) {
+      setPhotoFile(null)
+      setPhotoError('Choose a JPG, JPEG, or PNG image.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setPhotoFile(null)
+      setPhotoError('Choose an image smaller than 5 MB.')
+      return
+    }
+    setPhotoFile(file)
+  }
+
+  async function handlePhotoUpload() {
+    if (!photoFile) return
+    setPhotoError('')
+    setPhotoSuccess('')
+    setUploadingPhoto(true)
+    try {
+      const { data } = await uploadProfilePhoto(photoFile)
+      setProfileImage(data.profile_image ?? null)
+      setPhotoFile(null)
+      setPhotoSuccess('Profile photo updated.')
+    } catch (err) {
+      const detail = err.response?.data?.detail
+      const message = Array.isArray(detail)
+        ? detail.map((item) => typeof item?.msg === 'string' ? item.msg : '').filter(Boolean).join(' ')
+        : typeof detail === 'string' ? detail : ''
+      setPhotoError(message || 'We could not upload your photo. Please try again.')
+    } finally {
+      setUploadingPhoto(false)
+    }
   }
 
   async function handleSubmit(event) {
@@ -91,6 +156,23 @@ export default function ProfilePage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
+            <section className="flex flex-col gap-5 rounded-2xl border border-slate-700/80 bg-slate-800/70 p-5 shadow-lg shadow-black/10 sm:flex-row sm:items-center sm:p-6">
+              <ProfilePhotoAvatar profileImage={profileImage} previewUrl={photoPreview} name={user?.name} size="h-24 w-24" />
+              <div className="min-w-0 flex-1">
+                <h2 className="font-semibold text-white">Profile photo</h2>
+                <p className="mt-1 text-sm text-slate-400">Add a photo to personalize your CareerForge dashboard. JPG, JPEG, or PNG, up to 5 MB.</p>
+                <input ref={photoInput} type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" onChange={handlePhotoSelect} className="sr-only" aria-label="Choose profile photo" />
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button type="button" onClick={() => photoInput.current?.click()} className="rounded-xl border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-700">{photoFile ? 'Choose another' : 'Choose photo'}</button>
+                  {photoFile && <>
+                    <button type="button" onClick={handlePhotoUpload} disabled={uploadingPhoto} className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-60">{uploadingPhoto ? 'Uploading…' : 'Upload photo'}</button>
+                    <button type="button" onClick={() => { setPhotoFile(null); setPhotoError('') }} disabled={uploadingPhoto} className="rounded-xl px-3 py-2 text-sm text-slate-400 hover:text-white">Cancel</button>
+                  </>}
+                </div>
+                {photoError && <p role="alert" className="mt-3 text-sm text-red-300">{photoError}</p>}
+                {photoSuccess && <p role="status" className="mt-3 text-sm text-emerald-300">{photoSuccess}</p>}
+              </div>
+            </section>
             {sections.map((section, index) => (
               <section key={section.title} className="rounded-2xl border border-slate-700/80 bg-slate-800/70 p-5 shadow-lg shadow-black/10 sm:p-6">
                 <div className="mb-5 flex items-start gap-3">

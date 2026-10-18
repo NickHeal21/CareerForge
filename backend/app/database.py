@@ -34,3 +34,6 @@ def create_tables():
             connection.execute(text(
                 "CREATE INDEX IF NOT EXISTS ix_jobs_recruiter_id ON jobs (recruiter_id)"
             ))
+            connection.execute(text(
+                "ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profile_image VARCHAR(255)"
+            ))

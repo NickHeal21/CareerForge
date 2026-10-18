@@ -4,7 +4,7 @@ import { loginUser } from '../api/auth'
 import { useAuth } from '../store/useAuthStore'
 
 function dashboardPath(account) {
-  return account?.role === 'RECRUITER' ? '/recruiter' : account?.role === 'APPLICANT' ? '/dashboard' : '/'
+  return account?.role === 'ADMIN' ? '/admin' : account?.role === 'RECRUITER' ? '/recruiter' : account?.role === 'APPLICANT' ? '/dashboard' : '/'
 }
 
 /**

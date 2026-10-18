@@ -13,6 +13,7 @@ export default function AppLayout({ children }) {
   const navClass = ({ isActive }) =>
     `rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive ? 'bg-indigo-500/15 text-indigo-300' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`
   const isRecruiter = user?.role === 'RECRUITER'
+  const isAdmin = user?.role === 'ADMIN'
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 md:flex">
@@ -21,7 +22,13 @@ export default function AppLayout({ children }) {
           Career<span className="text-indigo-400">Forge</span>
         </Link>
         <nav className="mt-5 flex flex-wrap gap-2 md:flex-col">
-          {isRecruiter ? <>
+          {isAdmin ? <>
+            <NavLink to="/admin" end className={navClass}>Dashboard</NavLink>
+            <NavLink to="/admin/users" className={navClass}>Users</NavLink>
+            <NavLink to="/admin/recruiters" className={navClass}>Recruiters</NavLink>
+            <NavLink to="/admin/jobs" className={navClass}>Jobs</NavLink>
+            <NavLink to="/admin/applications" className={navClass}>Applications</NavLink>
+          </> : isRecruiter ? <>
             <NavLink to="/recruiter" end className={navClass}>Dashboard</NavLink>
             <NavLink to="/recruiter/profile" className={navClass}>Company Profile</NavLink>
             <NavLink to="/recruiter/jobs" className={navClass}>My Jobs</NavLink>

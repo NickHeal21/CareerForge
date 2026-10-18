@@ -29,7 +29,7 @@ export default function ProtectedRoute({ children, allowedRole }) {
   }
 
   if (allowedRole && user.role !== allowedRole) {
-    const destination = user.role === 'RECRUITER' ? '/recruiter' : user.role === 'APPLICANT' ? '/dashboard' : '/'
+    const destination = user.role === 'ADMIN' ? '/admin' : user.role === 'RECRUITER' ? '/recruiter' : user.role === 'APPLICANT' ? '/dashboard' : '/'
     return <Navigate to={destination} replace />
   }
 
