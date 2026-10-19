@@ -6,6 +6,7 @@ from app.database import create_tables
 import app.models  # noqa: F401 — registers all models with SQLAlchemy before create_tables()
 from app.routes import health, auth, profile, resumes, jobs, applications, readiness, roadmaps, recruiter, mentor, admin
 from app.routes import recruiter_verification, admin_verifications, company_logos
+from app.routes import external_jobs
 from app.seed import seed_jobs
 
 settings = get_settings()
@@ -41,6 +42,7 @@ app.include_router(auth.router,   prefix="/api/auth")
 app.include_router(profile.router, prefix="/api/profile")
 app.include_router(resumes.router, prefix="/api/resumes")
 app.include_router(jobs.router, prefix="/api/jobs")
+app.include_router(external_jobs.router, prefix="/api")
 app.include_router(applications.router, prefix="/api/applications")
 app.include_router(readiness.router, prefix="/api/readiness")
 app.include_router(roadmaps.router, prefix="/api/roadmaps")

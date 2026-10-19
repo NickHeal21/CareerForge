@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from pydantic import model_validator
 from functools import lru_cache
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -16,11 +17,15 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     gemini_model: str = "gemini-3.8-flash"
 
+    # External job search (RapidAPI JSearch)
+    jsearch_api_key: str = ""
+
     # App
     app_env: str = "development"
 
     class Config:
-        env_file = ".env"
+        # Resolve backend/.env independently of the process working directory.
+        env_file = str(Path(__file__).resolve().parents[1] / ".env")
         extra = "ignore"
 
     @model_validator(mode="after")
