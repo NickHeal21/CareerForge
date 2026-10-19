@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
-from app.ai.gemini import GeminiUnavailableError, analyze_readiness
+from app.ai.gemini import GeminiRateLimitError, GeminiUnavailableError, analyze_readiness
 from app.dependencies import get_current_user, get_db
 from app.models.job import Job
 from app.models.readiness_analysis import ReadinessAnalysis
@@ -52,6 +52,11 @@ def create_readiness_analysis(
 
     try:
         result = analyze_readiness(resume.extracted_text, job.title, job.company_name, job.description, job.required_skills)
+    except GeminiRateLimitError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Job readiness analysis is temporarily unavailable because the AI service has reached its usage limit. Please try again later.",
+        ) from exc
     except GeminiUnavailableError as exc:
         configured = "not configured" in str(exc).lower()
         raise HTTPException(

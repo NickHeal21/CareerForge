@@ -165,6 +165,9 @@ The percentage must be an integer from 0 to 100. All other values must be concis
     except GeminiUnavailableError:
         raise
     except Exception as exc:
+        if _is_rate_limited(exc):
+            logger.warning("Gemini readiness request was rate limited")
+            raise GeminiRateLimitError("The AI service usage limit has been reached.") from exc
         logger.exception("Gemini readiness request failed")
         raise GeminiUnavailableError("The AI service is temporarily unavailable. Please try again.") from exc
 
@@ -241,5 +244,8 @@ Include 4 to 10 ordered items. Durations should be realistic and concise (for ex
     except GeminiUnavailableError:
         raise
     except Exception as exc:
+        if _is_rate_limited(exc):
+            logger.warning("Gemini roadmap request was rate limited")
+            raise GeminiRateLimitError("The AI service usage limit has been reached.") from exc
         logger.exception("Gemini roadmap request failed")
         raise GeminiUnavailableError("The AI service is temporarily unavailable. Please try again.") from exc

@@ -64,7 +64,7 @@ def on_startup():
     seed_jobs()
     print("[OK] CareerForge API started")
     print(f"     Environment : {settings.app_env}")
-    print(f"     Database URL: {settings.database_url[:40]}...")
+    print("     Database    : configured")
 
 
 # ---------------------------------------------------------------------------

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
-from app.ai.gemini import GeminiUnavailableError, generate_roadmap
+from app.ai.gemini import GeminiRateLimitError, GeminiUnavailableError, generate_roadmap
 from app.dependencies import get_current_user, get_db
 from app.models.readiness_analysis import ReadinessAnalysis
 from app.models.roadmap import Roadmap, RoadmapItem
@@ -57,6 +57,11 @@ def create_roadmap(
             company_name=analysis.job.company_name,
             required_skills=analysis.job.required_skills,
         )
+    except GeminiRateLimitError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Roadmap generation is temporarily unavailable because the AI service has reached its usage limit. Please try again later.",
+        ) from exc
     except GeminiUnavailableError as exc:
         configured = "not configured" in str(exc).lower()
         raise HTTPException(
