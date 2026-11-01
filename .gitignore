@@ -6,6 +6,9 @@ __pycache__/
 venv/
 .env
 
+# User-generated uploads (keep local files, do not version them)
+backend/uploads/
+
 # Node
 node_modules/
 dist/

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import get_settings
+from app.config import api_documentation_options, get_settings
 from app.database import create_tables
 import app.models  # noqa: F401 — registers all models with SQLAlchemy before create_tables()
 from app.routes import health, auth, profile, resumes, jobs, applications, readiness, roadmaps, recruiter, mentor, admin
@@ -18,17 +18,15 @@ app = FastAPI(
     title="CareerForge API",
     description="AI-powered career development platform for students",
     version="0.1.0",
+    **api_documentation_options(settings.app_env),
 )
 
 # ---------------------------------------------------------------------------
-# CORS — allow the React dev server to talk to this API
+# CORS — use local origins by default and configured exact origins in production.
 # ---------------------------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",   # Vite default
-        "http://localhost:3000",   # fallback
-    ],
+    allow_origins=settings.cors_origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -58,12 +56,13 @@ app.include_router(company_logos.router, prefix="/api")
 # app.include_router(jobs.router,    prefix="/api/jobs",    tags=["jobs"])
 
 # ---------------------------------------------------------------------------
-# Startup event — create tables on first run
+# Startup event — local development initialization only.
 # ---------------------------------------------------------------------------
 @app.on_event("startup")
 def on_startup():
-    create_tables()
-    seed_jobs()
+    if settings.app_env == "development":
+        create_tables()
+        seed_jobs()
     print("[OK] CareerForge API started")
     print(f"     Environment : {settings.app_env}")
     print("     Database    : configured")
